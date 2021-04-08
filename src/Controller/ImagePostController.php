@@ -8,9 +8,11 @@ use App\Message\AddPonkaToImage;
 use App\Message\DeleteImagePost;
 use App\Repository\ImagePostRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -59,7 +61,10 @@ class ImagePostController extends AbstractController
         $entityManager->flush();
 
         $message = new AddPonkaToImage($imagePost->getId());
-        $messageBus->dispatch($message);
+        $envelope = new Envelope($message, [
+            new DelayStamp(500)
+        ]);
+        $messageBus->dispatch($envelope);
 
         return $this->toJson($imagePost, 201);
     }
