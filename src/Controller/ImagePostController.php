@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Entity\ImagePost;
 use App\Photo\PhotoFileManager;
-use App\Message\AddPonkaToImage;
-use App\Message\DeleteImagePost;
+use App\Message\Command\AddPonkaToImage;
+use App\Message\Command\DeleteImagePost;
 use App\Repository\ImagePostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Envelope;
