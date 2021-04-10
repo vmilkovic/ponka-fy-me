@@ -6,6 +6,7 @@ use App\Entity\ImagePost;
 use App\Photo\PhotoFileManager;
 use App\Message\Command\AddPonkaToImage;
 use App\Message\Command\DeleteImagePost;
+use App\Message\Command\LogEmoji;
 use App\Repository\ImagePostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Envelope;
@@ -20,6 +21,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Messenger\Transport\AmqpExt\AmqpStamp;
 
 class ImagePostController extends AbstractController
 {
@@ -62,9 +64,12 @@ class ImagePostController extends AbstractController
 
         $message = new AddPonkaToImage($imagePost->getId());
         $envelope = new Envelope($message, [
-            new DelayStamp(500)
+            new DelayStamp(1000),
+            new AmqpStamp('normal')
         ]);
         $messageBus->dispatch($envelope);
+
+        // $messageBus->dispatch(new LogEmoji(2));
 
         return $this->toJson($imagePost, 201);
     }
